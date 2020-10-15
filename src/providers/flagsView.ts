@@ -20,12 +20,18 @@ export class LaunchDarklyTreeViewProvider implements vscode.TreeDataProvider<Fla
 	private _onDidChangeTreeData: vscode.EventEmitter<FlagNode | null | void> = new vscode.EventEmitter<FlagNode | null | void>();
 	readonly onDidChangeTreeData: vscode.Event<FlagNode | null | void> = this._onDidChangeTreeData.event;
 
-	constructor(api: LaunchDarklyAPI, config: Configuration, flagStore: FlagStore, ctx: vscode.ExtensionContext, aliases?: FlagAliases) {
+	constructor(
+		api: LaunchDarklyAPI,
+		config: Configuration,
+		flagStore: FlagStore,
+		ctx: vscode.ExtensionContext,
+		aliases?: FlagAliases,
+	) {
 		this.api = api;
 		this.config = config;
 		this.ctx = ctx;
 		this.flagStore = flagStore;
-		this.aliases = aliases
+		this.aliases = aliases;
 		this.registerCommands();
 		this.start();
 	}
@@ -244,18 +250,13 @@ export class LaunchDarklyTreeViewProvider implements vscode.TreeDataProvider<Fla
 
 		if (this.aliases && this.aliases.keys[flag.key]) {
 			const aliases: Array<FlagNode> = this.aliases.keys[flag.key].map(alias => {
-				const aliasNode = new vscode.TreeItem(
-					alias,
-					NON_COLLAPSED)
+				const aliasNode = new vscode.TreeItem(alias, NON_COLLAPSED);
 				aliasNode.command = {
 					command: 'workbench.action.findInFiles',
 					title: 'Find in Files',
-					arguments: [{ query: alias,
-									triggerSearch: true,
-									matchWholeWord: true,
-									isCaseSensitive: true} ]
-				}
-				return aliasNode
+					arguments: [{ query: alias, triggerSearch: true, matchWholeWord: true, isCaseSensitive: true }],
+				};
+				return aliasNode;
 			});
 			renderedFlagFields.push(
 				this.flagFactory({ label: `Aliases`, children: aliases, collapsed: COLLAPSED, ctxValue: 'flagParentItem' }),
@@ -459,14 +460,14 @@ export function flagNodeFactory({
  * Class representing a Feature flag as vscode TreeItem
  * It is a nested array of FlagNode's to build the view
  */
- export class FlagNode extends vscode.TreeItem {
-	children: any|undefined;
+export class FlagNode extends vscode.TreeItem {
+	children: any | undefined;
 	contextValue?: string;
 	uri?: string;
 	flagKey?: string;
 	flagParentName?: string;
 	flagVersion: number;
-	command?: vscode.Command
+	command?: vscode.Command;
 	/**
 	 * @param label will be shown in the Treeview
 	 * @param collapsibleState is initial state collapsible state
@@ -486,7 +487,7 @@ export function flagNodeFactory({
 		flagKey?: string,
 		flagParentName?: string,
 		flagVersion?: number,
-		command?: vscode.Command
+		command?: vscode.Command,
 	) {
 		super(label, collapsibleState);
 		this.contextValue = contextValue;
@@ -496,7 +497,7 @@ export function flagNodeFactory({
 		this.flagParentName = flagParentName;
 		this.flagVersion = flagVersion;
 		this.conditionalIcon(ctx, this.contextValue, this.label);
-		this.command = command
+		this.command = command;
 	}
 
 	private conditionalIcon(ctx: vscode.ExtensionContext, contextValue: string, label: string) {
