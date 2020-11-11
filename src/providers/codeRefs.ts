@@ -23,11 +23,11 @@ export class FlagAliases {
 	public readonly aliasUpdates: EventEmitter<boolean | null> = new EventEmitter();
 	map = new Map();
 	keys = new Map();
-	private statusBar: StatusBarItem
+	private statusBar: StatusBarItem;
 
 	constructor(config: Configuration, ctx: ExtensionContext) {
 		this.config = config;
-		this.ctx = ctx
+		this.ctx = ctx;
 	}
 	aliases: Array<string>;
 
@@ -63,20 +63,19 @@ export class FlagAliases {
 	}
 
 	getKeys(): Map<string, string> {
-		return this.ctx.workspaceState.get("aliasKeys")
+		return this.ctx.workspaceState.get('aliasKeys');
 	}
 
 	getMap(): Map<string, string> {
-		return this.ctx.workspaceState.get("aliasMap")
+		return this.ctx.workspaceState.get('aliasMap');
 	}
 
 	async generateCsv(directory: string, outDir: string, repoName: string): Promise<void> {
 		try {
-			console.log("starting to find aliases")
+			console.log('starting to find aliases');
 			const command = `${this.config.codeRefsPath} --dir="${directory}" --dryRun --outDir="${outDir}" --projKey="${this.config.project}" --repoName="${repoName}" --baseUri="${this.config.baseUri}" --contextLines=-1 --branch=scan --revision=0`;
 			const output = await this.exec(command, {
-				env: { LD_ACCESS_TOKEN: this.config.accessToken,
-						GOMAXPROCS: 1 },
+				env: { LD_ACCESS_TOKEN: this.config.accessToken, GOMAXPROCS: 1 },
 				timeout: 20 * 60000,
 			});
 			if (output.stderr) {
@@ -115,10 +114,10 @@ export class FlagAliases {
 				});
 			})
 			.on('end', () => {
-				this.ctx.workspaceState.update("aliasMap", this.map)
-				this.ctx.workspaceState.update("aliasKeys", this.keys)
+				this.ctx.workspaceState.update('aliasMap', this.map);
+				this.ctx.workspaceState.update('aliasKeys', this.keys);
 				this.aliasUpdates.fire(true);
-				this.statusBar.hide()
+				this.statusBar.hide();
 				//fs.rmdir(tmpDir, { recursive: true });
 			});
 	}
@@ -144,7 +143,7 @@ export class FlagAliases {
 		}
 	}
 
-		// register a command that is invoked when the status bar
+	// register a command that is invoked when the status bar
 	// item is selected
 	setupStatusBar(): void {
 		const myCommandId = 'sample.showSelectionCount';
